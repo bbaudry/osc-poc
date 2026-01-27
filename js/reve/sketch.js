@@ -18,7 +18,7 @@ function centerCanvas() {
 
 function draw() {
 	background(0, 0, 0);
-	if(noise(frameCount)<0.1){
+	if(random()<0.05){
 		x=w*random(0.9)
 		y=h*random(0.9)
 		fill(0,0,100)
