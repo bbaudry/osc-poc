@@ -18,10 +18,15 @@ function centerCanvas() {
 
 function draw() {
 	background(0, 0, 0);
-	fill(hu,100, 100);
-	ellipse(w*0.5, h*0.5, 100, 100);
-	fill(0);
-	text(mouseX, w*0.45, h*0.5)
+	if(noise(frameCount)<0.1){
+		x=w*random(0.9)
+		y=h*random(0.9)
+		fill(0,0,100)
+		rect(x,y,w*0.1,h*0.1)
+		sendOsc("/show",1)
+		sendOsc("/x",x)
+		sendOsc("/y",y)
+	}
 }
 
 	function receiveOsc(address, value) {
@@ -31,12 +36,6 @@ function draw() {
 			x = value[0];
 			y = value[1];
 		}
-	}
-
-	function mouseClicked() {
-			r=random(255)
-			g=random(255)
-			sendOsc("/x",mouseX)
 	}
 
 	function sendOsc(address, value) {
