@@ -1,10 +1,10 @@
 var x, y, hu,socket,cnv,w,h;
 
 function setup() {
-	w=700
-	h=700
+	w=windowWidth
+	h=windowHeight
 	cnv=createCanvas(w, h);
-	centerCanvas()
+	//centerCanvas()
 	colorMode(HSB, 360, 100, 100, 250);
  	hu=random(360)
  	g=random(255)
@@ -16,18 +16,80 @@ function centerCanvas() {
     cnv.position(x, y);
 }
 
+
+carres=[]
+
 function draw() {
 	background(0, 0, 0);
-	if(random()<0.05){
-		x=w*random(0.9)
-		y=h*random(0.9)
-		fill(0,0,100)
-		rect(x,y,w*0.1,h*0.1)
-		sendOsc("/show",1)
-		sendOsc("/x",x)
-		sendOsc("/y",y)
+	console.log(carres.length)
+	if(random()<0.005 && carres.length<2){
+		let left
+		if(carres.length==1){
+			left=carres[0].left
+			left?carres.push(new Carre(false)):carres.push(new Carre(true))
+		}
+		else{
+			random()<0.5?left=true:left=false
+			carres.push(new Carre(left))
+		}
+	}
+	for(c in carres){
+		carres[c].update()
+		if(carres[c].live){carres[c].display()}
+		else{carres.splice(c,1)}
 	}
 }
+
+
+class Carre {
+    constructor(left) {
+		this.left=left
+		if(left){
+			let xratio=random(0.2,0.25)
+			let yratio=random(0.48,0.5)
+			this.x=xratio*w		
+        	this.y=yratio*h
+        	this.duration=Math.floor(random(210,424))
+        	this.cote=(0.25-xratio)*2*w
+			this.hauteur=(0.5-yratio)*2*h
+			this.count=0
+			this.live=true
+			this.alpha=255
+			this.blink=true
+		}
+		else{
+        	this.x=w*0.5
+        	this.y=0
+        	this.duration=Math.floor(random(210,424))
+        	this.cote=w*0.5
+			this.hauteur=h
+			this.count=0
+			this.live=true
+			this.alpha=255
+			this.blink=false
+		}
+    }
+
+    update() {  
+		if(this.blink){
+			random()<0.5?this.alpha=0:this.alpha=255
+		}else{
+		this.alpha-=0.5}
+		this.count++
+		if(this.count>this.duration){this.live=false}
+    } 
+
+    display() {
+        fill(0,0,100,this.alpha)
+        noStroke()
+        rect(this.x,this.y,this.cote,this.hauteur)
+    }
+
+}
+
+
+
+
 
 	function receiveOsc(address, value) {
 		console.log("received OSC: " + address + ", " + value);
