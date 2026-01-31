@@ -35,8 +35,18 @@ function draw() {
 	}
 	for(c in carres){
 		carres[c].update()
-		if(carres[c].live){carres[c].display()}
-		else{carres.splice(c,1)}
+		if(carres[c].live){
+			carres[c].display()
+			let gauche
+			carres[c].left?gauche=1:gauche=0
+			sendOsc('/left',gauche)
+			sendOsc('/largeur',carres[c].largeur)
+			sendOsc('/hauteur',carres[c].hauteur)
+			sendOsc('/alpha',carres[c].alpha)
+		}
+		else{
+			carres.splice(c,1)
+		}
 	}
 }
 
@@ -50,7 +60,7 @@ class Carre {
 			this.x=xratio*w		
         	this.y=yratio*h
         	this.duration=Math.floor(random(210,424))
-        	this.cote=(0.25-xratio)*2*w
+        	this.largeur=(0.25-xratio)*2*w
 			this.hauteur=(0.5-yratio)*2*h
 			this.count=0
 			this.live=true
@@ -61,7 +71,7 @@ class Carre {
         	this.x=w*0.5
         	this.y=0
         	this.duration=Math.floor(random(210,424))
-        	this.cote=w*0.5
+        	this.largeur=w*0.5
 			this.hauteur=h
 			this.count=0
 			this.live=true
@@ -82,7 +92,7 @@ class Carre {
     display() {
         fill(0,0,100,this.alpha)
         noStroke()
-        rect(this.x,this.y,this.cote,this.hauteur)
+        rect(this.x,this.y,this.largeur,this.hauteur)
     }
 
 }
