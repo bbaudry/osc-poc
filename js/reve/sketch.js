@@ -21,8 +21,7 @@ carres = []
 
 function draw() {
 	background(0, 0, 0);
-	console.log(carres.length)
-	if (random() < 0.005 && carres.length < 2) {
+	if (random() < 0.05 && carres.length < 2) {
 		let left
 		// there's max 2 elements in carre; if there is already one, we determine if it's left or right and we add the other
 		if (carres.length == 1) {
@@ -39,14 +38,6 @@ function draw() {
 		carres[c].update()
 		if (carres[c].live) {
 			carres[c].display()
-			if(random()<0.5){
-			sendOsc('/left/largeur', carres[c].largeur)
-			sendOsc('/left/hauteur', carres[c].hauteur)
-			sendOsc('/left/alpha', carres[c].alpha)
-			}
-			else{
-			sendOsc('/right/alpha', carres[c].alpha)
-			}
 		}
 		else {
 			carres.splice(c, 1)
@@ -87,11 +78,17 @@ class Carre {
 	update() {
 		if (this.blink) {
 			random() < 0.5 ? this.alpha = 0 : this.alpha = 255
+			sendOsc('/left/largeur', this.largeur)
+			sendOsc('/left/hauteur', this.hauteur)
+			sendOsc('/left/alpha', this.alpha)
 		} else {
 			this.alpha -= 0.5
+			sendOsc('/right/alpha', this.alpha)
 		}
 		this.count++
-		if (this.count > this.duration) { this.live = false }
+		if (this.count > this.duration) { 
+			this.left ? sendOsc('/left/stop',1) : sendOsc('/right/stop',1)
+		}
 	}
 
 	display() {
